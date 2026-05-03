@@ -573,6 +573,19 @@ app.get("/hca/callback", async(req, res) => {
     }
 })
 
+app.get("/health", async (res: Response) => {
+    try {
+        await table.select({maxRecords: 1}).firstPage();
+        res.status(200).json({
+            status: "ok",
+            uptime: "process.uptime()",
+            timestamp: Date.now()
+        });
+    } catch (err) {
+        res.status(500).json({status: "error", error: String(err)})
+    }
+})
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });

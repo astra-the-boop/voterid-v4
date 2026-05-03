@@ -77,4 +77,4 @@ First of all, make sure you have the necessary libraries installed, I included t
 
 But yeah anyway, just run the script and there you have it! It will tell you if the vote is legit or not, if not then it will spit back out its calculations alongside what you entered for you to compare (perhaps there's a typo somewhere? or whitespace?)
 
-> This works by basically following step by step what we did to generate the ID in the first place and comparing if it's the same or not. Since we used hashing, this is probably one of the few ways to check as hashing is irreversible (or at least very costly to)# voterid-v4
+> This works by basically following step by step what we did to generate the ID in the first place and comparing if it's the same or not. Since we used hashing, this is probably one of the few ways to check as hashing is irreversible (or at least very costly to)
