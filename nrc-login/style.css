@@ -67,10 +67,59 @@ h1{
     margin-right: auto;
 }
 
-a{
+a {
+    text-decoration: none;
     color: #ec3750;
 }
 
 #section-thing{
-    background-color: #b3bfd1
+    background-color: #b3bfd1;
+    border-radius: 1rem;
+    padding: 1.5rem 2.5rem;
+}
+
+#container1{
+    text-align: left;
+}
+
+#container1 button{
+    all: unset;
+    background-color: #717c8c;
+    padding: 0.5rem 0.7rem;
+    border-radius: 7.5px;
+    color: white;
+    font-weight: bold;
+    vertical-align: center;
+}
+
+#container1 button:hover{
+    cursor: pointer;
+    background-color: #59616e;
+}
+
+#back-span{
+    margin-top: -2rem;
+}
+
+#email{
+    all: unset;
+    background-color: #e0e6ed;
+    color: #000;
+    padding: 0.5rem;
+    border-radius: 5px;
+    width: 80%;
+    font-size: 1.1rem;
+}
+
+.nrc-text{
+    font-size: 1.5rem;
+    text-align: left;
+    margin: 2rem auto 0.3rem 10%;
+}
+
+.nrc-subtext{
+    color: black;
+    width: 80%;
+    text-align: center;
+    margin: 1.2rem auto auto auto;
 }
