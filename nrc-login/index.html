@@ -16,8 +16,14 @@
             <a href=".."><button id="back">← Back</button></a>
         </div>
         <h3 class="nrc-text">Email address</h3>
-        <input id="email" placeholder="example@hcgov.uk">
-        <p class="nrc-subtext">Please only use the email address linked to or provided in your Non-residential Citizenship application. If you are not a Non-residential Citizen, please <a href="..">log in using a different method</a>.</p>
+        <input id="email" type="email" placeholder="example@hcgov.uk">
+        <p class="nrc-subtext">Please only use the email address linked to or provided in your Non-residential Citizenship application. If you are not a Non-residential Citizen, please <a href="..">log in using a different method</a>.<br><br>If you require support, please contact us at <a href="mailto:hcnao@hcgov.uk">hcnao@hcgov.uk</a> or ask for support at <a href="https://discord.gg/MbNrfg37Cc">our embassy on Discord</a></p>
+        <button id="send-code">Send code</button>
+
+        <div id="otp">
+            <h3 class="nrc-text">OTP Code</h3>
+            <input type="text" autocomplete="one-time-code" inputmode="numeric" maxlength="6" pattern="\d{6}">
+        </div>
 
     </div>
     <br><br><h2 style="color: #338eda">Fulfil your duty as a citizen of Hack Club and cast your vote today and make sure your voice gets heard!</h2>

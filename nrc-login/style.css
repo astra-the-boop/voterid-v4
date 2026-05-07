@@ -80,6 +80,7 @@ a {
 
 #container1{
     text-align: left;
+    margin-top: 0.75rem;
 }
 
 #container1 button{
@@ -95,10 +96,6 @@ a {
 #container1 button:hover{
     cursor: pointer;
     background-color: #59616e;
-}
-
-#back-span{
-    margin-top: -2rem;
 }
 
 #email{
@@ -122,4 +119,19 @@ a {
     width: 80%;
     text-align: center;
     margin: 1.2rem auto auto auto;
+}
+
+#send-code{
+    all: unset;
+    border: none;
+    background-color: #ec3750;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 7px;
+    margin: 1.5rem auto 1.75rem auto;
+}
+
+#send-code:hover{
+    cursor: pointer;
+    background-color: #c62339;
 }
