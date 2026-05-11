@@ -29,6 +29,18 @@
     font-display: swap;
 }
 
+@font-face{
+    font-family: "JetBrains Mono";
+    src: url("font/JetBrainsMono-2.304/fonts/variable/JetBrainsMono[wght].ttf") format("truetype");
+    font-style: normal;
+}
+
+@font-face{
+    font-family: "JetBrains Mono";
+    src: url("font/JetbrainsMono-2.304/fonts/variable/JetBrainsMono-Italic[wght].ttf") format("truetype");
+    font-style: italic;
+}
+
 body{
     background-color: #e0e6ed;
     margin: 0;
@@ -134,4 +146,45 @@ a {
 #send-code:hover{
     cursor: pointer;
     background-color: #c62339;
+}
+
+#otp-input{
+    all:unset;
+    background-color: #e0e6ed;
+    font-size: 2.5rem;
+    padding: 1.5rem 1rem;
+    border-radius: 5px;
+    letter-spacing: 0.8rem;
+    width: 17rem;
+    font-family: "JetBrains Mono", monospace;
+    margin: 1rem auto auto auto;
+}
+
+#submit{
+    all:unset;
+    margin: 2rem auto 1rem auto;
+    background-color: #ec3750;
+    font-size: 1.75rem;
+    color: white;
+    font-family: "Phantom Sans", sans-serif;
+    font-weight: bold;
+    padding: 1rem 1.75rem;
+    border-radius: 3rem;
+    transition: transform .125s ease-in-out;
+}
+
+#submit:hover{
+    cursor: pointer;
+    transform: scale(1.0625)
+}
+
+#email-error{
+    color: #ec3750;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+#otp{
+    display: none;
+
 }

@@ -7,14 +7,14 @@ import Airtable from "airtable";
 const app = express();
 const port = 3298;
 
-const electionCycle: string = "2026-02-12" //YYYY-MM-DD
-
 const clientId = process.env.CLIENT_ID as string;
 const clientSecret = process.env.CLIENT_SECRET as string;
 const redirectUri = `${process.env.REDIRECT_DOMAIN}/callback`;
 const airtableKey = process.env.AIRTABLE_KEY as string;
 const airtableDbId = process.env.AIRTABLE_DB_ID as string;
 const tableName = process.env.AIRTABLE_TBL_NAME as string;
+const nrcTableName = process.env.NRC_TABLE as string;
+const nrcBaseId = process.env.AIRTABLE_DB_ID as string;
 
 const hcaClientId = process.env.HCA_CLIENT_ID as string;
 const hcaClientSecret = process.env.HCA_CLIENT_SECRET as string;
@@ -169,7 +169,7 @@ app.get("/callback", async (req, res) => {
             hackatime: await getHackatimeStatus(userInfo.data.sub)
         });
 
-        await sendDM(userInfo.data.sub, `:parliament-mini: *Thank you for signing up to vote in the ${new Date(electionCycle).toLocaleString("en-US", {month: "long"})} ${new Date(electionCycle).getFullYear()} General Elections of the Democratic Republic of Hack Club.* :tada:
+        await sendDM(userInfo.data.sub, `:parliament-mini: *Thank you for signing up to vote for elections and votes for the Democratic Republic of Hack Club.* :tada:
 
 > Time of retrieval: ${new Date(unixTimestamp).toISOString()}
 > User Slack ID: ${userInfo.data.sub}
@@ -304,7 +304,7 @@ _Not you? Contact us for support in <#C08FA68NV2T> so we can remove this vote!_`
     color: #e0e6ed;
   }
     </style>
-    <title>${new Date(electionCycle).toLocaleString("en-US", {month: "long"})} ${new Date(electionCycle).getFullYear()} Voter ID Registration - Hack Club Parliament</title>
+    <title>Voter ID Registration - Hack Club Parliament</title>
 </head>
 <body>
     <script>
@@ -321,10 +321,10 @@ _Not you? Contact us for support in <#C08FA68NV2T> so we can remove this vote!_`
         <img src="https://user-cdn.hackclub-assets.com/019c6977-598c-76bc-a27a-fbfa95353d10/parliament-full__1_.svg" id="logo">
     </div>
     <div id="body">
-        <h1>${userInfo.data.name}, Thank you for signing up to vote in the ${new Date(electionCycle).toLocaleString("en-US", {month: "long"})} ${new Date(electionCycle).getFullYear()} General Elections!</h1>
+        <h1>${userInfo.data.name}, Thank you for signing up to vote in elections or votes for the Democratic Republic of Hack Club!</h1>
         <h2 style="color:#338eda">Your voter identification details are below. Please submit this on your vote ballot.</h2>
 
-        <h2>Do NOT share your voter identification code, this code is used to identify you are a legitimate voter. This code is only valid for the ${new Date(electionCycle).toLocaleString("en-US", {month: "long"})} ${new Date(electionCycle).getFullYear()} Election cycle for the digital ballot.</h2>
+        <h2>Do NOT share your voter identification code, this code is used to identify you are a legitimate voter. This code is only valid for two months, please ensure you generate a new Voter ID every time you vote in a new vote or election. Your ballot may be considered illegitemate if you do not re-generate a new Voter ID.</h2>
         <button id="proceed" onclick="document.getElementById('details').style.display = 'block'; document.getElementById('proceed').style.display = 'none'">Proceed</button>
         <div id="details" style="display: none">
     <h2 style="color: #338eda"><b>Slack ID:</b></h2>
@@ -393,9 +393,12 @@ app.get("/hca/callback", async(req, res) => {
             hackatime: await getHackatimeStatus(userInfo.identity.slack_id)
         });
 
-        await sendDM(userInfo.identity.slack_id, `:parliament-mini: *Thank you for signing up to vote in the ${new Date(electionCycle).toLocaleString("en-US", {month: "long"})} ${new Date(electionCycle).getFullYear()} General Elections of the Democratic Republic of Hack Club.* :tada:
+        await sendDM(userInfo.identity.slack_id, `:parliament-mini: *Thank you for signing up to vote for elections and votes for the Democratic Republic of Hack Club.* :tada:
 > *Time of retrieval*: ${new Date(unixTimestamp).toISOString()}
 > *User Slack ID*: ${userInfo.identity.slack_id}
+
+*This is not your Voter ID*. Please check back on your browser for your Voter ID.
+Please note that your Voter ID is only valid for *2 months*, please generate a new one every time you vote in order to ensure validity.
         
         _Not you? Contact us for support in <#C08FA68NV2T> so we can remove this vote!_`)
 
@@ -527,7 +530,7 @@ app.get("/hca/callback", async(req, res) => {
     color: #e0e6ed;
   }
     </style>
-    <title>${new Date(electionCycle).toLocaleString("en-US", {month: "long"})} ${new Date(electionCycle).getFullYear()} Voter ID Registration - Hack Club Parliament</title>
+    <title>Voter ID Registration - Hack Club Parliament</title>
 </head>
 <body>
     <script>
@@ -544,10 +547,10 @@ app.get("/hca/callback", async(req, res) => {
         <img src="https://user-cdn.hackclub-assets.com/019c6977-598c-76bc-a27a-fbfa95353d10/parliament-full__1_.svg" id="logo">
     </div>
     <div id="body">
-        <h1>${userInfo.identity.last_name}, Thank you for signing up to vote in the ${new Date(electionCycle).toLocaleString("en-US", {month: "long"})} ${new Date(electionCycle).getFullYear()} General Elections!</h1>
+        <h1>${userInfo.identity.last_name}, Thank you for signing up to vote for elections and votes for the Democratic Republic of Hack Club!</h1>
         <h2 style="color:#338eda">Your voter identification details are below. Please submit this on your vote ballot.</h2>
 
-        <h2>Do NOT share your voter identification code, this code is used to identify you are a legitimate voter. This code is only valid for the ${new Date(electionCycle).toLocaleString("en-US", {month: "long"})} ${new Date(electionCycle).getFullYear()} Election cycle for the digital ballot.</h2>
+        <h2>Do NOT share your voter identification code, this code is used to identify you are a legitimate voter. This code is only valid for two months, please ensure you generate a new Voter ID every time you vote in a new vote or election. Your ballot may be considered illegitemate if you do not re-generate a new Voter ID.</h2>
         <button id="proceed" onclick="document.getElementById('details').style.display = 'block'; document.getElementById('proceed').style.display = 'none'">Proceed</button>
         <div id="details" style="display: none">
     <h2 style="color: #338eda"><b>Slack ID:</b></h2>
@@ -573,6 +576,11 @@ app.get("/hca/callback", async(req, res) => {
     }
 })
 
+//nrc
+const nrcBase = new Airtable({apiKey: airtableKey}).base(nrcBaseId)
+const nrcTable = nrcBase(nrcTableName);
+
+//health
 app.get("/health", async (res: Response) => {
     try {
         await table.select({maxRecords: 1}).firstPage();
