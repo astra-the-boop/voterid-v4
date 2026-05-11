@@ -580,6 +580,41 @@ Please note that your Voter ID is only valid for *2 months*, please generate a n
 const nrcBase = new Airtable({apiKey: airtableKey}).base(nrcBaseId)
 const nrcTable = nrcBase(nrcTableName);
 
+app.post("/nrc-email-check", async(req:Request, res:Response) => {
+    try{
+        const email = String(req.body.email || "").trim().toLowerCase();
+
+        if(!email){
+            return res.status(400).json({
+                ok: false,
+                error: "Missing or whitespace input"
+            });
+        }
+
+        const cleanEmail = email.replace(/"/g, '\\"');
+
+        const records = await nrcTable.select({
+            filterByFormula: `
+                OR(
+                    LOWER({Email sent to}) = LOWER("${cleanEmail}}"),
+                    LOWER({Email given in contract}) = LOWER("${cleanEmail}")
+                )
+            `
+        }).firstPage();
+
+        return res.json({
+            ok: records.length>0
+        });
+    }catch(err){
+        console.error(err);
+
+        return res.status(500).json({
+            ok: false,
+            error: "Internal Server Error"
+        });
+    }
+});
+
 //health
 app.get("/health", async (res: Response) => {
     try {
