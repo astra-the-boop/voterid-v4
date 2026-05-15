@@ -3,6 +3,7 @@ dotenv.config();
 import * as crypto from "crypto";
 import express, {Request, Response} from "express";
 import axios, {AxiosError} from "axios";
+import { Resend } from "resend";
 import Airtable from "airtable";
 const app = express();
 const port = 3298;
@@ -14,11 +15,16 @@ const airtableKey = process.env.AIRTABLE_KEY as string;
 const airtableDbId = process.env.AIRTABLE_DB_ID as string;
 const tableName = process.env.AIRTABLE_TBL_NAME as string;
 const nrcTableName = process.env.NRC_TABLE as string;
-const nrcBaseId = process.env.AIRTABLE_DB_ID as string;
+const nrcBaseId = process.env.NRC_DB_ID as string;
 
 const hcaClientId = process.env.HCA_CLIENT_ID as string;
 const hcaClientSecret = process.env.HCA_CLIENT_SECRET as string;
 const hcaRedirect = process.env.HCA_REDIRECT as string;
+
+const resendKey = process.env.RESEND_KEY as string;
+const resend = new Resend(resendKey);
+
+app.use(express.json());
 
 async function getHackatimeStatus(slackId: string){
     try{
@@ -596,7 +602,7 @@ app.post("/nrc-email-check", async(req:Request, res:Response) => {
         const records = await nrcTable.select({
             filterByFormula: `
                 OR(
-                    LOWER({Email sent to}) = LOWER("${cleanEmail}}"),
+                    LOWER({Email sent to}) = LOWER("${cleanEmail}"),
                     LOWER({Email given in contract}) = LOWER("${cleanEmail}")
                 )
             `
