@@ -3,6 +3,7 @@ dotenv.config();
 import * as crypto from "crypto";
 import express, {Request, Response} from "express";
 import axios, {AxiosError} from "axios";
+import rateLimit from "express-rate-limit";
 import { Resend } from "resend";
 import Airtable from "airtable";
 const app = express();
@@ -585,6 +586,18 @@ Please note that your Voter ID is only valid for *2 months*, please generate a n
 //nrc
 const nrcBase = new Airtable({apiKey: airtableKey}).base(nrcBaseId)
 const nrcTable = nrcBase(nrcTableName);
+app.set("trust proxy", 1);
+const emailLimiter = rateLimit({
+    windowMs: 15*60*1000,
+    max: 10,
+    statusCode: 429,
+    message: {
+        ok: false,
+        error: "Too many requests"
+    }
+})
+
+app.use("/nrc-email-check", emailLimiter);
 
 app.post("/nrc-email-check", async(req:Request, res:Response) => {
     try{
@@ -622,7 +635,7 @@ app.post("/nrc-email-check", async(req:Request, res:Response) => {
 });
 
 //health
-app.get("/health", async (res: Response) => {
+app.get("/health", async (_req: Request, res: Response) => {
     try {
         await table.select({maxRecords: 1}).firstPage();
         res.status(200).json({
