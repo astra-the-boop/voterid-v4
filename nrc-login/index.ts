@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if(!data.ok){
-                alert("This email address is not registered with a Non-residential Citizenship record. Please make sure you've entered the correct email address.");
+                alert(data.error || "Unable to send verification code");
                 return;
             }
 
