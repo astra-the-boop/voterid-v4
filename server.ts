@@ -595,7 +595,21 @@ const emailLimiter = rateLimit({
         ok: false,
         error: "Too many requests"
     }
-})
+});
+
+const otpStore = new Map<string,{
+    code: string,
+    expires: number
+}>();
+
+setInterval(()=>{
+    const now = Date.now();
+    for(const [email, data] of otpStore.entries()){
+        if(now > data.expires){
+            otpStore.delete(email);
+        }
+    }
+}, 60*1000);
 
 app.use("/nrc-email-check", emailLimiter);
 
@@ -621,9 +635,41 @@ app.post("/nrc-email-check", async(req:Request, res:Response) => {
             `
         }).firstPage();
 
-        return res.json({
-            ok: records.length>0
+        if(records.length === 0){
+            return res.json({
+                ok: false,
+                error: "Email address not eligible"
+            })
+        }
+
+        const otp = Math.floor(100000+Math.random()*9000).toString();
+
+        otpStore.set(email, {
+            code: otp,
+            expires: Date.now() + 30 * 60 * 1000
         });
+
+        await resend.emails.send({
+            from: "noreply@hcgov.uk",
+            to: email,
+            subject: "Your Verification Code",
+            html: `<body style="background-color: #e0e6ed; text-align: center; font-family: 'Phantom Sans', Helvetica, sans-serif; margin-left: 10%; margin-right: 10%;">
+    <p style="color: #ec3750; font-size: 1.5rem"><b>This is a one time passcode. Do not share this code with anyone.</b></p>
+    <p style="font-size: 1.75rem; margin-bottom: 0.2rem;">Your verification code is:</p>
+    <div style="background-color: #8492a6; color: white; width: 15rem; font-size: 3rem; padding: 1.5rem; letter-spacing: 0.5rem; font-family: monospace; margin-left: auto; margin-right: auto; border-radius: 15px"><b>${otp}</b></div>
+    <p style="font-size: 1.7rem; color: #ec3750">This verification code will expire in 30 minutes.</p>
+    <br><br>
+    <p>Official communication from the National Immigration and Citizenship Office of the Democratic Republic of Hack Club and Hack Club Election Committee</p>
+    <br>
+    <p><b>Notice:</b> The Democratic Republic of Hack Club and all related entities and communities are not associated with the 501(c)(3) US-based nonprofit organization "The Hack Foundation" (d.b.a. Hack Club). We exist as a role-play group within the community of Hack Club.</p>
+</body>`,
+            text: `Your verification code is ${otp}. Do not share this with anyone, this will expire in 30 minutes.`
+        });
+
+        return res.json({
+            ok: true,
+        })
+
     }catch(err){
         console.error(err);
 
@@ -633,6 +679,53 @@ app.post("/nrc-email-check", async(req:Request, res:Response) => {
         });
     }
 });
+
+const verifyLimiter = rateLimit({
+    windowMs: 2 * 60 * 1000,
+    max: 15,
+    statusCode: 429,
+    message: {
+        ok: false,
+        error: "Too many verification attempts."
+    }
+})
+
+app.use("/verify-otp", (verifyLimiter));
+app.post("/verify-otp", (req:Request, res:Response) => {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const code = String(req.body.code || "").trim();
+
+    const stored = otpStore.get(email);
+
+    if(!stored){
+        return res.status(400).json({
+            ok: false,
+            error: "No OTP found."
+        })
+    }
+
+    if(Date.now() > stored.expires){
+        otpStore.delete(email);
+
+        return res.status(400).json({
+            ok: false,
+            error: "OTP Code expired."
+        });
+    }
+
+    if(stored.code !== code){
+        return res.status(400).json({
+            ok: false,
+            error: "Invalid OTP"
+        });
+    }
+
+    otpStore.delete(email);
+
+    return res.json({
+        ok: true
+    })
+})
 
 //health
 app.get("/health", async (_req: Request, res: Response) => {
