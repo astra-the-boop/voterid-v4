@@ -600,7 +600,8 @@ const emailLimiter = rateLimit({
 
 const otpStore = new Map<string,{
     code: string,
-    expires: number
+    expires: number,
+    attempts: number
 }>();
 
 setInterval(()=>{
@@ -632,7 +633,7 @@ app.post("/nrc-email-check", async(req:Request, res:Response) => {
             })
         }
 
-        const cleanEmail = email.replace(/"/g, '\\"');
+        const cleanEmail = email.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, "");
 
         const records = await nrcTable.select({
             filterByFormula: `
@@ -650,14 +651,16 @@ app.post("/nrc-email-check", async(req:Request, res:Response) => {
             })
         }
 
-
-
         const otp = crypto.randomInt(100000, 1000000).toString();
 
         otpStore.set(email, {
             code: otp,
-            expires: Date.now() + 30 * 60 * 1000
+            expires: Date.now() + 30 * 60 * 1000,
+            attempts: 0
         });
+
+
+
 
         await resend.emails.send({
             from: "noreply@hcgov.uk",
@@ -692,7 +695,7 @@ app.post("/nrc-email-check", async(req:Request, res:Response) => {
 
 const verifyLimiter = rateLimit({
     windowMs: 2 * 60 * 1000,
-    max: 15,
+    max: 8,
     statusCode: 429,
     message: {
         ok: false,
@@ -706,6 +709,20 @@ app.post("/verify-otp", (req:Request, res:Response) => {
     const code = String(req.body.code || "").trim();
 
     const stored = otpStore.get(email);
+
+    if(!emailRegex.test(email)){
+        return res.status(400).json({
+            ok: false,
+            error: "Invalid email format."
+        })
+    }
+
+    if(!/^\d{6}$/.test(code)){
+        return res.status(400).json({
+            ok: false,
+            error: "Invalid OTP Code"
+        })
+    }
 
     if(!stored){
         return res.status(400).json({
@@ -724,6 +741,16 @@ app.post("/verify-otp", (req:Request, res:Response) => {
     }
 
     if(stored.code !== code){
+        stored.attempts++;
+
+        if(stored.attempts > 8){
+            otpStore.delete(email);
+            return res.status(429).json({
+                ok: false,
+                error: "Too many incorrect attempts. Request a new OTP."
+            })
+        }
+
         return res.status(400).json({
             ok: false,
             error: "Invalid OTP"
