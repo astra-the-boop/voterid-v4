@@ -628,7 +628,7 @@ app.post("/nrc-email-check", async(req:Request, res:Response) => {
         if(!emailRegex.test(email)){
             return res.status(400).json({
                 ok: false,
-                error: "Invalid email format".
+                error: "Invalid email format"
             })
         }
 
