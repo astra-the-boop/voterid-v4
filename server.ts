@@ -584,6 +584,8 @@ Please note that your Voter ID is only valid for *2 months*, please generate a n
 })
 
 //nrc
+// TODO: ADD REDIS IN FUTURE
+
 const nrcBase = new Airtable({apiKey: airtableKey}).base(nrcBaseId)
 const nrcTable = nrcBase(nrcTableName);
 app.set("trust proxy", 1);
@@ -638,11 +640,13 @@ app.post("/nrc-email-check", async(req:Request, res:Response) => {
         if(records.length === 0){
             return res.json({
                 ok: false,
-                error: "Email address not eligible"
+                error: "Email not eligible for verification."
             })
         }
 
-        const otp = Math.floor(100000+Math.random()*9000).toString();
+
+
+        const otp = crypto.randomInt(100000, 1000000).toString();
 
         otpStore.set(email, {
             code: otp,
@@ -733,7 +737,7 @@ app.get("/health", async (_req: Request, res: Response) => {
         await table.select({maxRecords: 1}).firstPage();
         res.status(200).json({
             status: "ok",
-            uptime: "process.uptime()",
+            uptime: process.uptime(),
             timestamp: Date.now()
         });
     } catch (err) {
