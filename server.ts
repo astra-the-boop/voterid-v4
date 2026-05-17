@@ -163,7 +163,6 @@ app.get("/callback", async (req, res) => {
             return res.status(500).send(`Error: ${userInfo.data.sub}`);
         }
         const voterId = cipherProcess(userInfo.data.sub, unixTimestamp, await getIndex());
-        // await getHackatimeStatus(userInfo.data.sub);
 
         await createRecord({
             slackId: userInfo.data.sub,
@@ -740,17 +739,17 @@ app.post("/verify-otp", (req:Request, res:Response) => {
         });
     }
 
+    stored.attempts++;
+
+    if(stored.attempts > 8){
+        otpStore.delete(email);
+        return res.status(429).json({
+            ok: false,
+            error: "Too many incorrect attempts. Request a new OTP."
+        })
+    }
+
     if(stored.code !== code){
-        stored.attempts++;
-
-        if(stored.attempts > 8){
-            otpStore.delete(email);
-            return res.status(429).json({
-                ok: false,
-                error: "Too many incorrect attempts. Request a new OTP."
-            })
-        }
-
         return res.status(400).json({
             ok: false,
             error: "Invalid OTP"
