@@ -6,6 +6,7 @@ import axios, {AxiosError} from "axios";
 import rateLimit from "express-rate-limit";
 import { Resend } from "resend";
 import Airtable from "airtable";
+import helmet from "helmet";
 const app = express();
 const port = 3298;
 
@@ -26,6 +27,7 @@ const resendKey = process.env.RESEND_KEY as string;
 const resend = new Resend(resendKey);
 
 app.use(express.json());
+app.use(helmet());
 
 async function getHackatimeStatus(slackId: string){
     try{
@@ -133,9 +135,6 @@ app.get("/callback", async (req, res) => {
         return res.status(404).send("missing code param")
     }
 
-    console.log("code", code);
-    console.log("client id", clientId);
-    console.log("redirect URI", redirectUri);
     const unixTimestamp = Date.now();
 
     try{
@@ -388,7 +387,6 @@ app.get("/hca/callback", async(req, res) => {
         });
 
         const userInfo = await userInfoRes.json();
-        console.log(userInfo)
         const voterId = cipherProcess(userInfo.identity.slack_id, unixTimestamp, await getIndex());
         await createRecord({
             slackId: userInfo.identity.slack_id,
@@ -586,6 +584,7 @@ Please note that your Voter ID is only valid for *2 months*, please generate a n
 //nrc
 // TODO: ADD REDIS IN FUTURE
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const nrcBase = new Airtable({apiKey: airtableKey}).base(nrcBaseId)
 const nrcTable = nrcBase(nrcTableName);
 app.set("trust proxy", 1);
@@ -624,6 +623,13 @@ app.post("/nrc-email-check", async(req:Request, res:Response) => {
                 ok: false,
                 error: "Missing or whitespace input"
             });
+        }
+
+        if(!emailRegex.test(email)){
+            return res.status(400).json({
+                ok: false,
+                error: "Invalid email format".
+            })
         }
 
         const cleanEmail = email.replace(/"/g, '\\"');
