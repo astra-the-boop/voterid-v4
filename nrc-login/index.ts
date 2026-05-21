@@ -11,16 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
     emailInput.addEventListener('input', () => {
         if(!validateEmail(emailInput.value) && emailInput.value){
             emailError.innerHTML = "Please enter a valid email address<br><br>";
+            otpSendBtn.disabled = true;
+        }else if(emailInput.value){
+            otpSendBtn.disabled = true;
         }else{
             emailError.innerHTML = "";
+            otpSendBtn.disabled = false;
         }
     });
 
     otpSendBtn.addEventListener("click", async() => {
+        otpSendBtn.disabled = true;
+        otpSendBtn.innerHTML = "Sending...";
         const email = emailInput.value.trim().toLowerCase();
 
         if(!validateEmail(email)){
-            alert("Please enter a valid email address.")
+            alert("Please enter a valid email address.");
+            otpSendBtn.disabled = false;
             return;
         }
 
@@ -39,14 +46,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if(!data.ok){
                 alert(data.error || "Unable to send verification code");
+                otpSendBtn.disabled = true;
                 return;
             }
 
             otpSection.style.display = "block";
+            otpSendBtn.style.display = "none";
         }catch(err){
             console.log(err);
             alert(`Unable to verify email address
 ${err}`);
         }
     });
+
 })
