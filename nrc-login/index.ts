@@ -12,11 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!validateEmail(emailInput.value) && emailInput.value){
             emailError.innerHTML = "Please enter a valid email address<br><br>";
             otpSendBtn.disabled = true;
+            console.log("A");
         }else if(emailInput.value){
-            otpSendBtn.disabled = true;
+            otpSendBtn.disabled = false;
+            console.log("B");
         }else{
             emailError.innerHTML = "";
-            otpSendBtn.disabled = false;
+            otpSendBtn.disabled = true;
+            console.log("C");
         }
     });
 
