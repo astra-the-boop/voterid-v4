@@ -329,6 +329,12 @@ _Not you? Contact us for support in <#C08FA68NV2T> so we can remove this vote!_`
             alert("Failed to copy text: " + err);
         });
     }
+    
+    function fucker(){
+        document.getElementById("details").style.display = "block";
+        document.getElementById("proceed").style.display = "none";
+        //FUCK YOU CONTENT SECURITY POLICY FUCK YOU IT WAS WORKING FINE BEFORE WHY DON'T YOU FUCKING WORK NOW YOU PIECE OF FUCKING SHIT
+    }
 </script>
     <div id="header">
         <img src="https://user-cdn.hackclub-assets.com/019c6977-598c-76bc-a27a-fbfa95353d10/parliament-full__1_.svg" id="logo">

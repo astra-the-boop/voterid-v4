@@ -192,3 +192,7 @@ a {
 #otp{
     display: none;
 }
+
+#submit:disabled{
+    background-color: #878f9c;
+}
